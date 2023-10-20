@@ -3,10 +3,21 @@ from gi.repository import GObject, Gedit
 
 def format_with_clang(document):
     if document and document.get_mime_type() in ["text/x-csrc", "text/x-c++src"]:
+        # Get current cursor position.
+        cursor_mark = document.get_insert()
+        cursor_iter = document.get_iter_at_mark(cursor_mark)
+        cursor_offset = cursor_iter.get_offset()
+
         try:
             source_code = document.get_text(document.get_start_iter(), document.get_end_iter(), True)
             formatted_code = subprocess.check_output(["clang-format"], input=source_code.encode(), stderr=subprocess.PIPE)
+            document.begin_user_action()
             document.set_text(formatted_code.decode())
+            document.end_user_action()
+
+            # Restore cursor position.
+            cursor_iter = document.get_iter_at_offset(cursor_offset)
+            document.place_cursor(cursor_iter)
         except Exception as e:
             # Handle or print exception.
             print(e)
