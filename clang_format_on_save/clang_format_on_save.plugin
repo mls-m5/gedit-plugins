@@ -1,0 +1,10 @@
+[Plugin]
+Loader=python3
+Module=clang_format_on_save
+IAge=3
+Name=Clang Format on Save
+Description=Formats the document using clang-format on save
+Authors=ChatGPT <support@openai.com>
+Copyright=ChatGPT (c) OpenAI
+Website=https://www.openai.com/
+
