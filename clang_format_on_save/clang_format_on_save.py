@@ -7,10 +7,18 @@ def format_with_clang(document):
         cursor_mark = document.get_insert()
         cursor_iter = document.get_iter_at_mark(cursor_mark)
         cursor_offset = cursor_iter.get_offset()
+        
+        # Determine the directory of the current document.
+        gedit_file = document.get_file()
+        location = gedit_file.get_location()
+        if location:
+            file_directory = location.get_parent().get_path()
+        else:
+            file_directory = None
 
         try:
             source_code = document.get_text(document.get_start_iter(), document.get_end_iter(), True)
-            formatted_code = subprocess.check_output(["clang-format"], input=source_code.encode(), stderr=subprocess.PIPE)
+            formatted_code = subprocess.check_output(["clang-format"], input=source_code.encode(), stderr=subprocess.PIPE, cwd=file_directory)
             document.begin_user_action()
             document.set_text(formatted_code.decode())
             document.end_user_action()
